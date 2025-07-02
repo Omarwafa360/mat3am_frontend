@@ -4,7 +4,7 @@ import { AnimatePresence } from 'framer-motion';
 import { Toaster } from '@/components/ui/toaster';
 import Layout from '@/components/layout/Layout';
 import PageLoader from '@/components/shared/PageLoader';
-import { useTheme } from '@/context/ThemeContext';
+import { useTheme } from '@/contexts/ThemeContext';
 import { hexToHsl } from '@/lib/colorUtils';
 
 const Home = React.lazy(() => import('@/pages/Home'));
@@ -13,7 +13,7 @@ const Menu = React.lazy(() => import('@/pages/Menu'));
 const Gallery = React.lazy(() => import('@/pages/Gallery'));
 const Contact = React.lazy(() => import('@/pages/Contact'));
 const Booking = React.lazy(() => import('@/pages/Booking'));
-const Admin = React.lazy(() => import('@/pages/Admin'));
+const Admin = React.lazy(() => import('@/pages/AdminDashboardPage')); // ✅ هنا التعديل الصحيح
 const NotFound = React.lazy(() => import('@/pages/NotFound'));
 
 function App() {
@@ -21,7 +21,7 @@ function App() {
   const { pageBackgrounds } = useTheme();
 
   useEffect(() => {
-    let pageColor = '#ffffff'; // اللون الافتراضي
+    let pageColor = '#ffffff';
 
     switch (location.pathname) {
       case '/':
@@ -49,10 +49,7 @@ function App() {
         pageColor = '#ffffff';
     }
 
-    // تحويل اللون من HEX إلى HSL
     const hslColor = hexToHsl(pageColor);
-
-    // تعيين المتغير في الـ CSS
     document.body.style.setProperty('--background', hslColor);
   }, [location.pathname, pageBackgrounds]);
 

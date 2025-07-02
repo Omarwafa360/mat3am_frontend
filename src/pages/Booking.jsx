@@ -2,84 +2,86 @@ import React, { useState } from 'react';
 import { Helmet } from 'react-helmet';
 import AnimatedPage from '@/components/shared/AnimatedPage';
 import PageHeader from '@/components/shared/PageHeader';
-import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
+import { Button } from '@/components/ui/button';
 import { useToast } from '@/components/ui/use-toast';
 
 const Booking = () => {
   const { toast } = useToast();
-
   const [formData, setFormData] = useState({
-    fullName: '',
-    phoneNumber: '',
+    full_name: '',
+    phone_number: '',
     email: '',
-    reservationDate: '',
-    reservationTime: '',
-    guestsCount: '',
-    specialNotes: '',
+    reservation_date: '',
+    reservation_time: '',
+    guests_count: '',
+    special_notes: '',
   });
 
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
   const handleChange = (e) => {
-    setFormData(prev => ({ ...prev, [e.target.name]: e.target.value }));
+    setFormData((prev) => ({
+      ...prev,
+      [e.target.name]: e.target.value,
+    }));
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setIsSubmitting(true);
 
-    // تحقق من تعبئة الحقول المطلوبة
-    const { fullName, phoneNumber, email, reservationDate, reservationTime, guestsCount } = formData;
-    if (!fullName || !phoneNumber || !email || !reservationDate || !reservationTime || !guestsCount) {
-      toast({
-        title: 'يرجى تعبئة جميع الحقول المطلوبة',
-        variant: 'destructive',
-      });
-      return;
-    }
-
+    // تعديل: ربط النموذج بـ API الحجز الجديدة
     try {
-      const response = await fetch('/api/booking/requests', {
+      const response = await fetch('/api/booking', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: {
+          'Content-Type': 'application/json',
+        },
         body: JSON.stringify(formData),
       });
 
-      if (response.ok) {
+      const result = await response.json();
+      
+      if (result.success) {
         toast({
-          title: 'تم إرسال طلب الحجز بنجاح!',
-          description: 'سنتواصل معك قريبًا لتأكيد الحجز.',
+          title: 'تم إرسال طلب الحجز',
+          description: 'تم استلام طلب حجزك بنجاح. سنتواصل معك قريباً.',
+          variant: 'success',
         });
-        // إعادة تعيين الحقول
         setFormData({
-          fullName: '',
-          phoneNumber: '',
+          full_name: '',
+          phone_number: '',
           email: '',
-          reservationDate: '',
-          reservationTime: '',
-          guestsCount: '',
-          specialNotes: '',
+          reservation_date: '',
+          reservation_time: '',
+          guests_count: '',
+          special_notes: '',
         });
       } else {
         toast({
-          title: 'حدث خطأ!',
-          description: 'لم نتمكن من إرسال طلب الحجز. حاول مرة أخرى.',
+          title: 'خطأ في إرسال الطلب',
+          description: result.message || 'حدث خطأ أثناء إرسال طلب الحجز. الرجاء المحاولة مرة أخرى.',
           variant: 'destructive',
         });
       }
     } catch (error) {
+      console.error('Booking form submission error:', error);
       toast({
-        title: 'حدث خطأ!',
-        description: 'لم نتمكن من إرسال طلب الحجز. حاول مرة أخرى.',
+        title: 'خطأ في الاتصال',
+        description: 'حدث خطأ في الاتصال بالخادم. الرجاء المحاولة لاحقاً.',
         variant: 'destructive',
       });
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
   return (
     <AnimatedPage>
       <Helmet>
-        <title>احجز طاولتك | مطعم الأصالة</title>
+        <title>حجز طاولة | مطعم الأصالة</title>
         <meta name="description" content="احجز طاولتك في مطعم الأصالة بسهولة وسرعة. استمتع بأفضل الأجواء وأشهى الأطباق." />
       </Helmet>
 
@@ -91,25 +93,25 @@ const Booking = () => {
       <form onSubmit={handleSubmit} className="max-w-3xl mx-auto space-y-6 rtl">
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
           <div>
-            <Label htmlFor="fullName">الاسم الكامل *</Label>
+            <label htmlFor="full_name" className="block mb-1 font-semibold">الاسم الكامل *</label>
             <Input
-              id="fullName"
-              name="fullName"
+              id="full_name"
+              name="full_name"
               type="text"
               placeholder="اسمك الكامل"
-              value={formData.fullName}
+              value={formData.full_name}
               onChange={handleChange}
               required
             />
           </div>
           <div>
-            <Label htmlFor="phoneNumber">رقم الهاتف *</Label>
+            <label htmlFor="phone_number" className="block mb-1 font-semibold">رقم الهاتف *</label>
             <Input
-              id="phoneNumber"
-              name="phoneNumber"
+              id="phone_number"
+              name="phone_number"
               type="tel"
               placeholder="رقم هاتفك"
-              value={formData.phoneNumber}
+              value={formData.phone_number}
               onChange={handleChange}
               required
             />
@@ -117,7 +119,7 @@ const Booking = () => {
         </div>
 
         <div>
-          <Label htmlFor="email">البريد الإلكتروني *</Label>
+          <label htmlFor="email" className="block mb-1 font-semibold">البريد الإلكتروني *</label>
           <Input
             id="email"
             name="email"
@@ -131,36 +133,36 @@ const Booking = () => {
 
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
           <div>
-            <Label htmlFor="reservationDate">تاريخ الحجز *</Label>
+            <label htmlFor="reservation_date" className="block mb-1 font-semibold">تاريخ الحجز *</label>
             <Input
-              id="reservationDate"
-              name="reservationDate"
+              id="reservation_date"
+              name="reservation_date"
               type="date"
-              value={formData.reservationDate}
+              value={formData.reservation_date}
               onChange={handleChange}
               required
             />
           </div>
           <div>
-            <Label htmlFor="reservationTime">وقت الحجز *</Label>
+            <label htmlFor="reservation_time" className="block mb-1 font-semibold">وقت الحجز *</label>
             <Input
-              id="reservationTime"
-              name="reservationTime"
+              id="reservation_time"
+              name="reservation_time"
               type="time"
-              value={formData.reservationTime}
+              value={formData.reservation_time}
               onChange={handleChange}
               required
             />
           </div>
           <div>
-            <Label htmlFor="guestsCount">عدد الضيوف *</Label>
+            <label htmlFor="guests_count" className="block mb-1 font-semibold">عدد الضيوف *</label>
             <Input
-              id="guestsCount"
-              name="guestsCount"
+              id="guests_count"
+              name="guests_count"
               type="number"
               min="1"
               max="50"
-              value={formData.guestsCount}
+              value={formData.guests_count}
               onChange={handleChange}
               required
             />
@@ -168,18 +170,20 @@ const Booking = () => {
         </div>
 
         <div>
-          <Label htmlFor="specialNotes">ملاحظات إضافية</Label>
+          <label htmlFor="special_notes" className="block mb-1 font-semibold">ملاحظات إضافية</label>
           <Textarea
-            id="specialNotes"
-            name="specialNotes"
+            id="special_notes"
+            name="special_notes"
             placeholder="إذا كان لديك ملاحظات خاصة، اكتبها هنا..."
             rows={4}
-            value={formData.specialNotes}
+            value={formData.special_notes}
             onChange={handleChange}
           />
         </div>
 
-        <Button type="submit" className="w-full">إرسال طلب الحجز</Button>
+        <Button type="submit" className="w-full" disabled={isSubmitting}>
+          {isSubmitting ? 'جاري الإرسال...' : 'إرسال طلب الحجز'}
+        </Button>
       </form>
     </AnimatedPage>
   );

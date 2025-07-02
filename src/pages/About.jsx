@@ -7,7 +7,6 @@ const About = () => {
   const [story, setStory] = useState([]);
   const [values, setValues] = useState([]);
   const [team, setTeam] = useState([]);
-  const [settings, setSettings] = useState({});
 
   useEffect(() => {
     async function fetchAboutData() {
@@ -27,10 +26,6 @@ const About = () => {
         const teamData = await teamRes.json();
         setTeam(teamData);
 
-        // جلب الإعدادات (لون الخلفية، SEO)
-        const settingsRes = await fetch('/api/about/settings');
-        const settingsData = await settingsRes.json();
-        setSettings(settingsData);
       } catch (error) {
         console.error('خطأ في جلب بيانات صفحة عن المطعم:', error);
       }
@@ -41,8 +36,8 @@ const About = () => {
   return (
     <AnimatedPage>
       <Helmet>
-        <title>{settings.seo_title || 'عن المطعم | مطعم الأصالة'}</title>
-        <meta name="description" content={settings.seo_description || 'تعرف على قصة مطعم الأصالة وقيمه وفريق العمل المميز.'} />
+        <title>عن المطعم | مطعم الأصالة</title>
+        <meta name="description" content="تعرف على قصة مطعم الأصالة وقيمه وفريق العمل المميز." />
       </Helmet>
 
       <PageHeader

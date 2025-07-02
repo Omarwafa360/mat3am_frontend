@@ -1,15 +1,22 @@
-import React from "react";
-import ReactDOM from "react-dom/client";
-import { BrowserRouter } from "react-router-dom";
-import App from "@/App";
-import { ThemeProvider } from "@/context/ThemeContext";
-import './index.css'; // استيراد ملف CSS الرئيسي
+// src/main.jsx
 
-ReactDOM.createRoot(document.getElementById("root")).render(
+import React from 'react';
+import ReactDOM from 'react-dom/client';
+import { BrowserRouter } from 'react-router-dom';
+
+import App from './App';
+import { ThemeProvider } from './contexts/ThemeContext';
+import { LayoutProvider } from './contexts/LayoutContext';
+
+import './index.css'; // ملف CSS الأساسي مع Tailwind وغيرها
+
+ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
     <BrowserRouter>
       <ThemeProvider>
-        <App />
+        <LayoutProvider>
+          <App />
+        </LayoutProvider>
       </ThemeProvider>
     </BrowserRouter>
   </React.StrictMode>
